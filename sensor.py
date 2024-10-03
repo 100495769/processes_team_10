@@ -83,8 +83,8 @@ class Sensor:
         if column < 0 or column >= self._columns:
             return False
         if self._room[row][column] == 'X':
-            return False
-        return True
+            return True
+        return False
 
     # Can be used by the master at its initialization.
     # Can be used by a robot at any given time
