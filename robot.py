@@ -35,9 +35,6 @@ class Robot:
     def max_battery(self):
         self.battery = 100
 
-    def exit(self):
-        return self.position, self.battery
-
     def tr(self):
         if self.sensor.with_treasure(*self.position):
             return "Treasure"
