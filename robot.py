@@ -1,11 +1,15 @@
 import os, sys, signal, argparse
 import sensor
+
+#################---------------ROBOT---------------#################
+
 class Robot:
     def __init__(self, identifier: int, position: list, battery: int, room):
         self.position = position
         self.battery = battery
         self.identifier = identifier
         self.sensor = sensor.Sensor(room)
+        self.suspended = False
 
     def get_position(self):
         return self.position
@@ -13,42 +17,87 @@ class Robot:
     def get_battery(self):
         return self.battery
 
+    def get_suspended(self):
+        return self.suspended
+
+    def get_identifier(self):
+        return self.identifier
+
     def change_battery(self, change):
         self.battery += change
+
+    def change_suspended(self, change):
+        self.suspended = change
+
+    def check_obstacles(self):
+        return self.sensor.with_obstacle(*self.position)
+
+    def max_battery(self):
+        self.battery = 100
 
     def exit(self):
         return self.position, self.battery
 
     def tr(self):
-        return self.sensor.with_treasure(*position)
+        if self.sensor.with_treasure(*self.position):
+            return "Treasure"
+        else:
+            return "Water"
 
     def mv(self, direction):
-        if direction == "up":
-            pass
-        elif direction == "down":
-            pass
-        elif direction == "right":
-            pass
-        elif direction == "left":
-            pass
+        if self.suspended == True:
+            return None
+        elif self.battery <= 0:
+            print("KO")
+            return None
         else:
-            print("Invalid")
+            self.change_battery(-5)
+        #Check the tile you want to move is within the room dimensions
+        if direction.lower() == "up" and self.position[0] != 0:
+            #Check the if there is and obstacle where you want to move
+            if not self.sensor.with_obstacle(self.position[0] - 1, self.position[1]):
+                self.position[0] -= 1
+                print("OK")
+            else:
+                print("KO")
+        elif direction.lower() == "down" and self.position[0] != self.sensor.dimensions()[0]-1:
+            if not self.sensor.with_obstacle(self.position[0] + 1, self.position[1]):
+                self.position[0] += 1
+                print("OK")
+            else:
+                print("KO")
+        elif direction.lower() == "right" and self.position[1] != self.sensor.dimensions()[1]-1:
+            if not self.sensor.with_obstacle(self.position[0], self.position[1] + 1):
+                self.position[1] += 1
+                print("OK")
+            else:
+                print("KO")
+        elif direction.lower() == "left" and self.position[1] != 0:
+            if not self.sensor.with_obstacle(self.position[0], self.position[1] - 1):
+                self.position[1] -= 1
+                print("OK")
+            else:
+                print("KO")
+        else:
+            print("KO")
 
+#################---------------SIGNAL HANDLER---------------#################
 
 def sig_handler(signo, frame):
     if (signo==signal.SIGINT):
-        pass
+        robot.change_suspended(True)
     elif(signo==signal.SIGQUIT):
-        pass
+        robot.change_suspended(False)
     elif(signo==signal.SIGTSTP):
-        pass
+        print(robot.get_identifier(), robot.get_position(), robot.get_battery())
     elif(signo==signal.SIGUSR1):
-        pass
+        robot.max_battery()
     elif(signo==signal.SIGALRM):
-        robot.change_battery(-1)
+        if robot.get_suspended() == False:
+            robot.change_battery(-1)
         signal.alarm(1)
 
-
+#################---------------MAIN---------------#################
 
 def main():
     #Arguments using argparser
@@ -80,9 +129,28 @@ def main():
 
     #Example of the alarm working.
     signal.alarm(1)
-    while True:
-        signal.pause()
-        print(robot.get_battery())
+    Active = True
+    if robot.check_obstacles() == True:
+        Active = False
+        print("Invalid initial position", file=sys.stderr)
+
+    while Active:
+
+        commands = input()
+        if commands.lower().split()[0] == "mv":
+            robot.mv(commands.split()[1])
+        elif commands.lower() == "tr":
+            print(robot.tr())
+        elif commands.lower() == "bat":
+            print(robot.get_battery())
+        elif commands.lower() == "pos":
+            print(robot.get_position())
+        elif commands.lower() == "exit":
+            Active = False
+            print(robot.get_position(), robot.get_battery())
+        else:
+            print("Invalid command", file=sys.stderr)
+
 
 if __name__ == "__main__":
     main()
