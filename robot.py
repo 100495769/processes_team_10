@@ -5,76 +5,73 @@ import sensor
 
 class Robot:
     def __init__(self, identifier: int, position: list, battery: int, room):
-        self.position = position
-        self.battery = battery
-        self.identifier = identifier
-        self.sensor = sensor.Sensor(room)
-        self.suspended = False
+        self._position = position
+        self._battery = battery
+        self._identifier = identifier
+        self._sensor = sensor.Sensor(room)
+        self._suspended = False
 
     def get_position(self):
-        return self.position
+        return self._position
 
     def get_battery(self):
-        return self.battery
+        return self._battery
 
     def get_suspended(self):
-        return self.suspended
+        return self._suspended
 
     def get_identifier(self):
-        return self.identifier
+        return self._identifier
 
     def change_battery(self, change):
-        self.battery += change
+        self._battery += change
 
     def change_suspended(self, change):
-        self.suspended = change
+        self._suspended = change
 
     def check_obstacles(self):
-        return self.sensor.with_obstacle(*self.position)
+        return self._sensor.with_obstacle(*self._position)
 
     def max_battery(self):
-        self.battery = 100
-
-    def exit(self):
-        return self.position, self.battery
+        self._battery = 100
 
     def tr(self):
-        if self.sensor.with_treasure(*self.position):
+        if self._sensor.with_treasure(*self._position):
             return "Treasure"
         else:
             return "Water"
 
     def mv(self, direction):
-        if self.suspended == True:
+        if self._suspended == True:
             return None
-        elif self.battery <= 0:
+        elif self._battery <= 0:
             print("KO")
             return None
         else:
             self.change_battery(-5)
         #Check the tile you want to move is within the room dimensions
-        if direction.lower() == "up" and self.position[0] != 0:
+        if direction.lower() == "up" and self._position[0] != 0:
             #Check the if there is and obstacle where you want to move
-            if not self.sensor.with_obstacle(self.position[0] - 1, self.position[1]):
-                self.position[0] -= 1
+            if not self._sensor.with_obstacle(self._position[0] - 1, self._position[1]):
+                self._position[0] -= 1
                 print("OK")
             else:
                 print("KO")
-        elif direction.lower() == "down" and self.position[0] != self.sensor.dimensions()[0]-1:
-            if not self.sensor.with_obstacle(self.position[0] + 1, self.position[1]):
-                self.position[0] += 1
+        elif direction.lower() == "down" and self._position[0] != self._sensor.dimensions()[0]-1:
+            if not self._sensor.with_obstacle(self._position[0] + 1, self._position[1]):
+                self._position[0] += 1
                 print("OK")
             else:
                 print("KO")
-        elif direction.lower() == "right" and self.position[1] != self.sensor.dimensions()[1]-1:
-            if not self.sensor.with_obstacle(self.position[0], self.position[1] + 1):
-                self.position[1] += 1
+        elif direction.lower() == "right" and self._position[1] != self._sensor.dimensions()[1]-1:
+            if not self._sensor.with_obstacle(self._position[0], self._position[1] + 1):
+                self._position[1] += 1
                 print("OK")
             else:
                 print("KO")
-        elif direction.lower() == "left" and self.position[1] != 0:
-            if not self.sensor.with_obstacle(self.position[0], self.position[1] - 1):
-                self.position[1] -= 1
+        elif direction.lower() == "left" and self._position[1] != 0:
+            if not self._sensor.with_obstacle(self._position[0], self._position[1] - 1):
+                self._position[1] -= 1
                 print("OK")
             else:
                 print("KO")
