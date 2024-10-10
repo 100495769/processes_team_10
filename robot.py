@@ -44,7 +44,7 @@ class Robot:
     def mv(self, direction):
         if self._suspended == True:
             return None
-        elif self._battery <= 0:
+        elif self._battery <= 4:
             print("KO")
             return None
         else:
@@ -90,6 +90,8 @@ def sig_handler(signo, frame):
     elif(signo==signal.SIGUSR1):
         robot.max_battery()
     elif(signo==signal.SIGALRM):
+        if robot.get_battery() <= 0:
+            robot.change_suspended(True)
         if robot.get_suspended() == False:
             robot.change_battery(-1)
         signal.alarm(1)
