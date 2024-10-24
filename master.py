@@ -26,43 +26,30 @@ def resume():
 def exit():
     pass
 
-def initial_positions(robots_file):
-    robot_positions = []
+def robots_setup(robots_file):
+    # This function is used to obtain the data from robots_file and store it into a list.
+    # It also sets an id for each robot.
+    robots = []
     with open(robots_file, 'r') as file:
         for i, line in enumerate (file):
-            position = tuple(map(int, line.strip()[1:-1].split(',')))
-            ###quitamos paréntesis y espacios y lo convertimos en una tupla (,)
-            robot_positions.append(robot_id=(i+1),position)
-            ### i+1 para q los robots empiecen en 1 y la lista tenga ambos "id" y posicion
-            ### no entendemos muy bien como hace esto
-
-    return robot_positions
-
-def initialize_robots(robot_positions):
-    robots = []
-    for robot_id, position in robot_positions:
-        robots.append([robot_id, position, 50, 'False'])
+            #Formating
+            position = list(map(int, line.strip()[1:-1].split(',')))
+            # Each robot is represented by a list that contains: [0] the id, [1] the position
+            robots.append([i+1, position, 50, 'False'])
     return robots
 
-def receive_robots(r_pipe):
+
+def update_robot(robot, r_pipe):
     try:
-        data = os.read(r_pipe,1024).decode()
-        return eval(data)
+        new_robot = [robot[0]]
+        data = os.read(r_pipe,1024).decode('utf-8')
+        new_pos, new_bat, new_stat = data.split(',')
+        new_robot.append(list(map(int, new_pos[1:-1].split(','))))
+        new_robot.append(int(new_bat))
+        new_robot.append(bool(new_stat))
     except:
         print("Error", file=sys.stderr)
-        return None
-
-
-def update(robots, robot_id, r_pipe):
-    new = receive_robots(r_pipe)
-    if new:
-        new_pos, new_bat, new_stat = new
-        for robot in robots:
-            if robot[0] == robot_id:
-                robot[1] = new_pos
-                robot[2] = new_bat
-                robot[3] = new_stat
-                break
+        return -1
 
 '''esto es lo q queriamos q pasara:
 estabamos centrados en la manera de almacenar y gestionar la info de todos los robots
