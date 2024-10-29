@@ -20,8 +20,10 @@ def print(robots, treasures, water, obstacles): ### las 3 listas funcionan [0][1
                 if self._sensor.rows[i] == k[0] and self._sensor.columns[j] == k[1]:
                     print("X")
             for k in robots:
-                pass ### hacer q i,j sea una tupla para comparar con robots[1] q seria k[1]
-            print("?")
+                position = (self._sensor.rows[i], self._sensor.columns[j])
+                if position == k[1]
+            else:
+                print("?")
 
 def bat(input, robots):
     if input != "all":
