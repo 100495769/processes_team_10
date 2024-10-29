@@ -21,9 +21,13 @@ def print(robots, treasures, water, obstacles): ### las 3 listas funcionan [0][1
                     print("X")
             for k in robots:
                 position = (self._sensor.rows[i], self._sensor.columns[j])
-                if position == k[1]
+                if position == k[1]:
+                    print("R")
             else:
                 print("?")
+
+def mv(input, robots): ### aqui se deberia llamar a robot.py y q devuelva los datos del robot para guardarlo de nuevo en las listas
+    pass
 
 def bat(input, robots):
     if input != "all":
