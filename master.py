@@ -5,26 +5,74 @@ from time import sleep
 import sensor
 
 
-def mv():
+def print(robots, treasures, water, obstacles): ### las 3 listas funcionan [0][1] = ( , ) para las posiciones, hay q crearlas en mv para almacenar los datos
+    print("Our information so far is: ")
+
     for i in range(self._sensor.rows):
         for j in range(self._sensor.columns):
-           if self._sensor.rows[i], self._sensor.columns[j] == pass:
-              pass
-           elif:
-               pass
-           else:
-               print("?")
+            for k in water:
+                if self._sensor.rows[i] == k[0] and self._sensor.columns[j] == k[1]:
+                    print("-")
+            for k in treasures:
+                if self._sensor.rows[i] == k[0] and self._sensor.columns[j] == k[1]:
+                    print("T")
+            for k in obstacles:
+                if self._sensor.rows[i] == k[0] and self._sensor.columns[j] == k[1]:
+                    print("X")
+            for k in robots:
+                pass ### hacer q i,j sea una tupla para comparar con robots[1] q seria k[1]
+            print("?")
 
-def bat():
-    pass
-def pos():
-    pass
-def suspend():
-    pass
-def resume():
-    pass
-def exit():
-    pass
+def bat(input, robots):
+    if input != "all":
+        print(robots[int (input) - 1][2])
+
+    elif input == "all":
+        for i in robots:
+            print(i[2])
+
+    else:
+        print("Error", file=sys.stderr)
+
+def pos(input, robots):
+    if input != "all":
+        print(robots[int(input) - 1][1])
+
+    elif input == "all":
+        for i in robots:
+            print(i[1])
+
+    else:
+        print("Error", file=sys.stderr)
+def suspend(input, robots):
+    if input != "all":
+        robots[int(input) - 1][3] = "True"
+
+    elif input == "all":
+        for i in robots:
+            i[3] = "True"
+
+    else:
+        print("Error", file=sys.stderr)
+def resume(input, robots):
+    if input != "all":
+        robots[int(input) - 1][3] = "False"
+
+    elif input == "all":
+        for i in robots:
+            i[3] = "False"
+
+    else:
+        print("Error", file=sys.stderr)
+def exit(robots, treasures, running):
+    running = "False" ### esto esta de placeholder, crear en el main un while "True"
+
+    for i in robots:
+        print("Robot %i: position %i, battery %i" ,i[0], i[1], i[2])
+
+    print("Treasures found in:")
+    for i in treasures:
+        print("(%i, %i)", i[0], i[1])
 
 def robots_setup(robots_file):
     # This function is used to obtain the data from robots_file and store it into a list.
