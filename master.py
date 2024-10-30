@@ -26,8 +26,91 @@ def print(robots, treasures, water, obstacles): ### las 3 listas funcionan [0][1
             else:
                 print("?")
 
-def mv(input, robots): ### aqui se deberia llamar a robot.py y q devuelva los datos del robot para guardarlo de nuevo en las listas
-    pass
+def mv(input, direction, robots, treasures, water, obstacles): ### aqui se deberia llamar a robot.py y q devuelva los datos del robot para guardarlo de nuevo en las listas
+    ### comprobar posicion de otros robots
+    ### for para moverlos uno a uno
+    ### ejecutar automaticamente tr de robot.py
+    """1 pillar robot id y direccion
+        2 buscar robot
+            for
+        3 pillar su direccion
+        4 comprobar proxima posicion
+            if de cada direccion
+            for de la lista
+        5 ejecutar robot.py
+            si se puede mover el robot:
+            master manda el input
+            robot.py ejecuta mv
+                guarda si hay obstaculo
+            una vez movido ejecuta tr
+                guarda si hay tr o agua
+        6 actualizar posiciones"""
+    #comprobar si en nuestra lista esta el robot que llaman
+
+    if input != "all":
+        for i in robots:
+            if i[0] == input:
+               if direction == "up":
+                   for j in robots:
+                       if j[1] == robots[int(input) - 1][1][0] - 1:
+                           print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                       else:
+                           pass
+
+               if direction == "down":
+                   for j in robots:
+                       if j[1] == robots[int(input) - 1][1][0] + 1:
+                           print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                       else:
+                           pass
+               if direction == "left":
+                   for j in robots:
+                       if j[1] == robots[int(input) - 1][1][1] - 1:
+                           print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                       else:
+                           pass
+               if direction == "right":
+                   for j in robots:
+                       if j[1] == robots[int(input) - 1][1][1] + 1:
+                           print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                       else:
+                           pass
+
+    else:
+        for _ in robots:
+            if direction == "up":
+                for j in robots:
+                    if j[1] == robots[int(input) - 1][1][0] - 1:
+                        print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                    else:
+                        pass
+
+            if direction == "down":
+                for j in robots:
+                    if j[1] == robots[int(input) - 1][1][0] + 1:
+                        print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                    else:
+                        pass
+            if direction == "left":
+                for j in robots:
+                    if j[1] == robots[int(input) - 1][1][1] - 1:
+                        print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                    else:
+                        pass
+            if direction == "right":
+                for j in robots:
+                    if j[1] == robots[int(input) - 1][1][1] + 1:
+                        print("Collision between robot %i and robot %i", robots[int(input) - 1][0], j[0])
+                    else:
+                        pass
+
+
+
+
+
+
+
+
 
 def bat(input, robots):
     if input != "all":
@@ -116,6 +199,27 @@ receive es para q coja la info de robot.py, queremos q sea con pipes y no sabemo
 update es para q la lista se actualice cada vez q se lo pidamos
     suponemos como funciona pero no estamos seguros de como recibe la info
 '''
+#################---------------SIGNAL HANDLER---------------#################
+
+def sig_handler(signo, frame, robots):
+    if (signo==signal.SIGINT):
+        pass
+    elif(signo==signal.SIGQUIT):
+        ###mandar sigusr1 a los robots, ellos ya tienen definido q hacer en robot.py esto esta con chatgpt porq nos rendiamos
+            for pid in os.listdir('/proc'):
+                if pid.isdigit():  # Nos aseguramos de que sea un número de proceso
+                    try:
+                        os.kill(int(pid), signal.SIGUSR1)  # Envía SIGUSR1 al proceso
+                    except ProcessLookupError:
+                        # El proceso no existe (posiblemente terminó)
+                        pass
+                    except PermissionError:
+                        # No tienes permiso para enviar señales a este proceso
+                        pass
+    elif(signo==signal.SIGTSTP):
+        for i in robots:
+            print("Robot %i: position (%i) , battery %i", i[0], i[1], i[2])
+
 
 def main():
     #Arguments using argparser
@@ -130,7 +234,14 @@ def main():
     room_file = args.room_file
     robots_file = args.robots_file
 
+    #__Signal handler__#
+    signal.signal(signal.SIGINT, sig_handler)
+    signal.signal(signal.SIGQUIT, sig_handler)
+    signal.signal(signal.SIGTSTP, sig_handler)
 
+    treasures = []
+    water = []
+    obstacles =[]
 
     r_pipe, w_pipe = os.pipe()
     pid = os.fork()
