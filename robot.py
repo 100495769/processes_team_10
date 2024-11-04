@@ -43,6 +43,8 @@ class Robot:
 
     def mv(self, direction):
         if self._suspended == True:
+            # Changed so it matches the master program logic. It can be removed but master won't work.
+            print("KO")
             return None
         elif self._battery <= 4:
             print("KO")
@@ -76,7 +78,8 @@ class Robot:
             else:
                 print("KO")
         else:
-            print("KO")
+            # Changed so it matches master program logic. Need to know what type of KO is.
+            print("KOUT")
 
 #################---------------SIGNAL HANDLER---------------#################
 
@@ -126,12 +129,13 @@ def main():
     signal.signal(signal.SIGALRM, sig_handler)
 
 
-    #Example of the alarm working.
+    #Set up the alarm
     signal.alarm(1)
     Active = True
     if robot.check_obstacles() == True:
         Active = False
         print("Invalid initial position", file=sys.stderr)
+        return -1
 
     while Active:
 
